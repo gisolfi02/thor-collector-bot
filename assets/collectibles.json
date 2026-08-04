@@ -12,7 +12,7 @@
     "name": "Thor al sushi",
     "filename": "thor-002.png",
     "caption": "Thor al sushi è apparso!",
-    "rarity": "Raro",
+    "rarity": "Comune",
     "description": "IO THOR"
   },
   {
@@ -20,7 +20,7 @@
     "name": "Selfie Thor",
     "filename": "thor-003.png",
     "caption": "Selfie Thor è apparso!",
-    "rarity": "Raro",
+    "rarity": "Comune",
     "description": "IO THOR"
   },
   {
@@ -28,7 +28,7 @@
     "name": "Thor aviatore",
     "filename": "thor-004.png",
     "caption": "Thor aviatore è apparso!",
-    "rarity": "Epico",
+    "rarity": "Raro",
     "description": "IO THOR"
   },
   {
@@ -36,7 +36,7 @@
     "name": "Thor elegante",
     "filename": "thor-005.png",
     "caption": "Thor elegante è apparso!",
-    "rarity": "Epico",
+    "rarity": "Raro",
     "description": "IO THOR"
   },
   {
@@ -44,7 +44,7 @@
     "name": "Thor romano",
     "filename": "thor-006.png",
     "caption": "Thor romano è apparso!",
-    "rarity": "Leggendario",
+    "rarity": "Epico",
     "description": "IO THOR"
   },
   {
@@ -60,6 +60,70 @@
     "name": "Thor martello",
     "filename": "thor-008.png",
     "caption": "Thor martello è apparso!",
+    "rarity": "Comune",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_009",
+    "name": "Selfie con Thor",
+    "filename": "thor-009.png",
+    "caption": "Selfie con Thor è apparso!",
+    "rarity": "Leggendario",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_010",
+    "name": "Thor lupo",
+    "filename": "thor-010.png",
+    "caption": "Thor lupo è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_011",
+    "name": "Thor Romics",
+    "filename": "thor-011.png",
+    "caption": "Thor Romics è apparso!",
+    "rarity": "Comune",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_012",
+    "name": "Thor motocilcista",
+    "filename": "thor-012.png",
+    "caption": "Thor motocilcista è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_013",
+    "name": "Thor militare",
+    "filename": "thor-013.png",
+    "caption": "Thor militare è apparso!",
+    "rarity": "Epico",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_014",
+    "name": "Thor con Thor",
+    "filename": "thor-014.png",
+    "caption": "Thor con Thor è apparso!",
+    "rarity": "Epico",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_015",
+    "name": "Thor gangster",
+    "filename": "thor-015.png",
+    "caption": "Thor gangster è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_016",
+    "name": "Thor premiato",
+    "filename": "thor-016.png",
+    "caption": "Thor premiato è apparso!",
     "rarity": "Raro",
     "description": "IO THOR"
   }
