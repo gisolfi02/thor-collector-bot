@@ -1,6 +1,7 @@
 """Game administration and leaderboard slash commands."""
 
 from __future__ import annotations
+from pathlib import Path
 
 import logging
 from typing import TYPE_CHECKING
@@ -331,3 +332,50 @@ class GameCommands(commands.Cog):
         )
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
         view.message = await interaction.original_response()
+
+    @app_commands.command(
+        name="thor",
+        description="Mostra una foto casuale di Thor solo per visualizzazione.",
+    )
+    async def thor(self, interaction: discord.Interaction) -> None:
+        """Show a random collectible as a non-capturable preview."""
+
+        if interaction.guild is None:
+            await interaction.response.send_message(
+                "Questo comando può essere usato solo in un server.",
+                ephemeral=True,
+            )
+            return
+
+        collectible = self.bot.collectible_service.choose()
+        if collectible is None:
+            await interaction.response.send_message(
+                "Non ci sono foto disponibili da mostrare al momento.",
+                ephemeral=True,
+            )
+            return
+
+        image_path = self.bot.collectible_service.image_path(collectible)
+        if not image_path.is_file():
+            await interaction.response.send_message(
+                "L'immagine associata a questa foto non è disponibile.",
+                ephemeral=True,
+            )
+            return
+
+        embed = discord.Embed(
+            title=f"{collectible.name}",
+            color=discord.Color(0x00AEEF),
+        )
+
+        embed.add_field(name="Rarità", value=collectible.rarity, inline=True)
+        file = discord.File(
+            image_path,
+            filename=image_path.name,
+        )
+        embed.set_image(url=f"attachment://{image_path.name}")
+
+        await interaction.response.send_message(
+            embed=embed,
+            file=file,
+        )
