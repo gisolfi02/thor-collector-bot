@@ -1,0 +1,22 @@
+services:
+  thor-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thor-collector-bot
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    volumes:
+      - thor-data:/data
+      - ./assets:/app/assets:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  thor-data:
+    name: thor-collector-data

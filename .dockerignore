@@ -1,0 +1,17 @@
+.git
+.github
+.env
+.venv
+venv
+__pycache__
+.pytest_cache
+.ruff_cache
+.mypy_cache
+*.pyc
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+data/*
+tests
+FULL_PROJECT_SOURCE.md
+thor-collector-bot.zip

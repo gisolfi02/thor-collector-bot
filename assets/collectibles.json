@@ -1,0 +1,66 @@
+[
+  {
+    "id": "thor_001",
+    "name": "Thor real",
+    "filename": "thor-001.png",
+    "caption": "Il vero Thor è apparso!",
+    "rarity": "Comune",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_002",
+    "name": "Thor al sushi",
+    "filename": "thor-002.png",
+    "caption": "Thor al sushi è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_003",
+    "name": "Selfie Thor",
+    "filename": "thor-003.png",
+    "caption": "Selfie Thor è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_004",
+    "name": "Thor aviatore",
+    "filename": "thor-004.png",
+    "caption": "Thor aviatore è apparso!",
+    "rarity": "Epico",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_005",
+    "name": "Thor elegante",
+    "filename": "thor-005.png",
+    "caption": "Thor elegante è apparso!",
+    "rarity": "Epico",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_006",
+    "name": "Thor romano",
+    "filename": "thor-006.png",
+    "caption": "Thor romano è apparso!",
+    "rarity": "Leggendario",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_007",
+    "name": "Thor marino",
+    "filename": "thor-007.png",
+    "caption": "Thor marino è apparso!",
+    "rarity": "Leggendario",
+    "description": "IO THOR"
+  },
+  {
+    "id": "thor_008",
+    "name": "Thor martello",
+    "filename": "thor-008.png",
+    "caption": "Thor martello è apparso!",
+    "rarity": "Raro",
+    "description": "IO THOR"
+  }
+]
