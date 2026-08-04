@@ -22,6 +22,16 @@ class CollectibleService:
     """Load the JSON catalog and mirror enabled entries into SQLite."""
 
     REQUIRED_FIELDS = {"id", "name", "filename", "caption", "rarity"}
+    RARITY_WEIGHTS: dict[str, int] = {
+        "comune": 50,
+        "non comune": 25,
+        "raro": 15,
+        "epico": 8,
+        "leggendario": 2,
+    }
+
+    DEFAULT_RARITY_WEIGHT = 1
+
 
     def __init__(self, database: Database, catalog_path: Path, images_dir: Path) -> None:
         self.database = database
@@ -161,17 +171,59 @@ class CollectibleService:
         )
 
     def choose(self, previous_id: str | None = None) -> Collectible | None:
-        """Choose a random enabled item with an existing image.
+      """Sceglie una foto usando probabilità differenti per rarità.
 
-        When at least two valid items exist, the immediately previous item is excluded.
-        """
+      Prima viene selezionata la rarità secondo i pesi configurati,
+      poi viene scelta casualmente una foto appartenente a quella rarità.
 
-        valid = [
-            item
-            for item in self._catalog.values()
-            if item.is_enabled and self.image_path(item).is_file()
-        ]
-        if not valid:
-            return None
-        candidates = [item for item in valid if item.collectible_id != previous_id]
-        return self._rng.choice(candidates or valid)
+      Quando possibile, la foto pubblicata nello spawn precedente viene esclusa.
+      """
+
+      valid = [
+          item
+          for item in self._catalog.values()
+          if item.is_enabled and self.image_path(item).is_file()
+      ]
+
+      if not valid:
+          return None
+
+      candidates = [
+          item
+          for item in valid
+          if item.collectible_id != previous_id
+      ]
+
+      pool = candidates or valid
+
+      collectibles_by_rarity: dict[str, list[Collectible]] = {}
+
+      for collectible in pool:
+          rarity_key = " ".join(
+              collectible.rarity.strip().casefold().split()
+          )
+
+          collectibles_by_rarity.setdefault(
+              rarity_key,
+              [],
+          ).append(collectible)
+
+      available_rarities = list(collectibles_by_rarity)
+
+      rarity_weights = [
+          self.RARITY_WEIGHTS.get(
+              rarity,
+              self.DEFAULT_RARITY_WEIGHT,
+          )
+          for rarity in available_rarities
+      ]
+
+      selected_rarity = self._rng.choices(
+          available_rarities,
+          weights=rarity_weights,
+          k=1,
+      )[0]
+
+      return self._rng.choice(
+          collectibles_by_rarity[selected_rarity]
+      )
