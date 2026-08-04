@@ -104,6 +104,7 @@ class CaptureResult:
     captured: bool
     reason: str
     spawn_id: int | None = None
+    spawn_message_id: int | None = None
     collectible_id: str | None = None
     collectible_name: str | None = None
     rarity: str | None = None

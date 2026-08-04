@@ -51,7 +51,7 @@ class CaptureService:
             async with self.database.transaction() as connection:
                 cursor = await connection.execute(
                     """
-                    SELECT s.spawn_id, s.collectible_id, s.spawned_at,
+                    SELECT s.spawn_id, s.message_id, s.collectible_id, s.spawned_at,
                            c.name, c.rarity
                     FROM spawns AS s
                     JOIN collectibles AS c ON c.collectible_id = s.collectible_id
@@ -143,6 +143,7 @@ class CaptureService:
                 captured=True,
                 reason="captured",
                 spawn_id=int(row["spawn_id"]),
+                spawn_message_id=int(row["message_id"]),
                 collectible_id=str(row["collectible_id"]),
                 collectible_name=str(row["name"]),
                 rarity=str(row["rarity"]),

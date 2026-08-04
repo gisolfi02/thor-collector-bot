@@ -223,7 +223,52 @@ class ThorCollectorBot(commands.Bot):
             return
         if not result.captured or attempt.guild_id is None:
             return
+        if result.spawn_message_id is not None:
+          try:
+              if isinstance(message.channel, discord.TextChannel):
+                  spawn_message = await message.channel.fetch_message(
+                      result.spawn_message_id
+                  )
+                  await spawn_message.delete()
 
+                  LOGGER.info(
+                      "Captured spawn message deleted",
+                      extra={
+                          "guild_id": attempt.guild_id,
+                          "spawn_id": result.spawn_id,
+                          "message_id": result.spawn_message_id,
+                      },
+                  )
+
+          except discord.NotFound:
+              LOGGER.info(
+                  "Captured spawn message was already deleted",
+                  extra={
+                      "guild_id": attempt.guild_id,
+                      "spawn_id": result.spawn_id,
+                      "message_id": result.spawn_message_id,
+                  },
+              )
+
+          except discord.Forbidden:
+              LOGGER.warning(
+                  "Unable to delete captured spawn message due to missing permissions",
+                  extra={
+                      "guild_id": attempt.guild_id,
+                      "spawn_id": result.spawn_id,
+                      "message_id": result.spawn_message_id,
+                  },
+              )
+
+          except discord.HTTPException:
+              LOGGER.exception(
+                  "Discord error while deleting captured spawn message",
+                  extra={
+                      "guild_id": attempt.guild_id,
+                      "spawn_id": result.spawn_id,
+                      "message_id": result.spawn_message_id,
+                  },
+              )
         formatted_capture_time = format_duration_ms(result.capture_time_ms)
         try:
             await message.channel.send(
