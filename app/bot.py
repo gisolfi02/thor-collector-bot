@@ -85,6 +85,9 @@ class ThorCollectorBot(commands.Bot):
             intents=intents,
             help_command=None,
             allowed_mentions=discord.AllowedMentions(users=True, roles=False, everyone=False),
+            activity=discord.CustomActivity(
+                name="Siamo con ...?"
+            ),
         )
         self.settings = settings
         self.database = Database(settings.database_path)
