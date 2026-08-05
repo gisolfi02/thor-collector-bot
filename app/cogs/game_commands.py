@@ -11,7 +11,10 @@ from discord import app_commands
 from discord.ext import commands
 
 from app.models import GuildConfig, LeaderboardEntry
-from app.services.spawn_manager import missing_channel_permissions
+from app.services.spawn_manager import (
+    ForceSpawnResult,
+    missing_channel_permissions,
+)
 from app.views.destroy_confirmation import DestroyConfirmationView
 
 if TYPE_CHECKING:
@@ -379,3 +382,60 @@ class GameCommands(commands.Cog):
             embed=embed,
             file=file,
         )
+
+    @app_commands.command(
+      name="forcespawn",
+      description="Fa apparire immediatamente una foto catturabile",
+    )
+    @app_commands.guild_only()
+    async def forcespawn(self, interaction: discord.Interaction) -> None:
+        """Cancel the pending wait and publish a capturable spawn immediately."""
+
+        config = await self._deny_or_config(interaction)
+
+        if config is None or interaction.guild_id is None:
+            return
+
+        await interaction.response.defer(
+            ephemeral=True,
+            thinking=True,
+        )
+
+        result = await self.bot.spawn_manager.force_spawn(
+            interaction.guild_id
+        )
+
+        if result is ForceSpawnResult.SPAWNED:
+            message = (
+                f"⚡ Spawn forzato pubblicato in <#{config.channel_id}>.\n"
+                "La foto è catturabile normalmente scrivendo `thor`."
+            )
+
+        elif result is ForceSpawnResult.ALREADY_ACTIVE:
+            message = (
+                "Esiste già una foto attiva e catturabile nel canale di gioco. "
+                "Deve essere catturata prima di forzarne un'altra."
+            )
+
+        elif result is ForceSpawnResult.INACTIVE:
+            message = (
+                "Il gioco non è attivo. Usa `/start` prima di forzare uno spawn."
+            )
+
+        else:
+            message = (
+                "Non sono riuscito a pubblicare la foto. "
+                "Controlla immagini, canale e permessi del bot. "
+                "Il normale timer è stato ripristinato."
+            )
+
+        LOGGER.info(
+            "Force spawn command executed",
+            extra={
+                "guild_id": interaction.guild_id,
+                "user_id": interaction.user.id,
+                "result": result.value,
+            },
+        )
+
+        await interaction.edit_original_response(content=message)

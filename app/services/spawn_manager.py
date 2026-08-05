@@ -1,5 +1,4 @@
 """Per-guild spawn scheduling and Discord message publication."""
-
 from __future__ import annotations
 
 import asyncio
@@ -7,6 +6,7 @@ import logging
 import random
 from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
+from enum import StrEnum
 
 import discord
 
@@ -25,6 +25,14 @@ REQUIRED_CHANNEL_PERMISSIONS: tuple[tuple[str, str], ...] = (
     ("attach_files", "Attach Files"),
     ("read_message_history", "Read Message History"),
 )
+
+class ForceSpawnResult(StrEnum):
+    """Possible outcomes of an immediate spawn request."""
+
+    SPAWNED = "SPAWNED"
+    ALREADY_ACTIVE = "ALREADY_ACTIVE"
+    INACTIVE = "INACTIVE"
+    FAILED = "FAILED"
 
 
 def missing_channel_permissions(channel: discord.abc.GuildChannel, me: discord.Member) -> list[str]:
@@ -56,6 +64,7 @@ class SpawnManager:
         self.spawn_repository = spawn_repository
         self.collectibles = collectibles
         self.locks = locks
+        self._force_spawn_locks = GuildLockRegistry()
         self.tasks: dict[int, asyncio.Task[None]] = {}
         self._spawning_guilds: set[int] = set()
         self._stop_requested: set[int] = set()
@@ -113,6 +122,45 @@ class SpawnManager:
         """Schedule the next collectible using the guild's current interval."""
 
         await self.start_for_guild(guild_id)
+
+    async def force_spawn(self, guild_id: int) -> ForceSpawnResult:
+      """Cancel the current wait and publish a capturable spawn immediately."""
+
+      async with self._force_spawn_locks.get(guild_id):
+          # Fa terminare immediatamente l'attesa attuale.
+          await self.stop_for_guild(guild_id)
+
+          config = await self.guild_repository.get(guild_id)
+
+          if config is None or not config.is_active:
+              return ForceSpawnResult.INACTIVE
+
+          # Non sostituiamo una foto che è già attiva e catturabile.
+          active_spawn = await self.spawn_repository.get_active(guild_id)
+
+          if active_spawn is not None:
+              return ForceSpawnResult.ALREADY_ACTIVE
+
+          spawned = await self.spawn_collectible(guild_id)
+
+          if spawned:
+              LOGGER.info(
+                  "Immediate collectible spawn requested",
+                  extra={"guild_id": guild_id},
+              )
+              return ForceSpawnResult.SPAWNED
+
+          # Se l'invio fallisce, ripristina il normale timer per evitare
+          # che gli spawn rimangano bloccati definitivamente.
+          await self.restart_for_guild(guild_id)
+
+          LOGGER.warning(
+              "Immediate collectible spawn failed; scheduler restored",
+              extra={"guild_id": guild_id},
+          )
+
+          return ForceSpawnResult.FAILED
+    
 
     def _task_done(self, guild_id: int, task: asyncio.Task[None]) -> None:
         if self.tasks.get(guild_id) is task:
