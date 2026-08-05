@@ -25,6 +25,15 @@ from app.services.spawn_manager import SpawnManager
 
 LOGGER = logging.getLogger(__name__)
 
+FAILED_CAPTURE_REACTION = "😂​"
+
+FAILED_CAPTURE_REASONS = frozenset(
+    {
+        "no_active_spawn",
+        "already_captured",
+    }
+)
+
 
 def format_duration_ms(duration_ms: int) -> str:
     """Formatta una durata in millisecondi usando unità di tempo leggibili."""
@@ -237,7 +246,12 @@ class ThorCollectorBot(commands.Bot):
                 extra={"guild_id": attempt.guild_id, "channel_id": attempt.channel_id},
             )
             return
-        if not result.captured or attempt.guild_id is None:
+        if not result.captured:
+            if result.reason in FAILED_CAPTURE_REASONS:
+                await self._add_failed_capture_reaction(message)
+            return
+
+        if attempt.guild_id is None:
             return
         if result.spawn_message_id is not None:
           try:
@@ -298,6 +312,40 @@ class ThorCollectorBot(commands.Bot):
             )
         finally:
             await self.spawn_manager.schedule_next_spawn(attempt.guild_id)
+
+
+    async def _add_failed_capture_reaction(
+        self,
+        message: discord.Message,
+    ) -> None:
+        """Add a reaction to a valid but unsuccessful capture message."""
+
+        try:
+            await message.add_reaction(FAILED_CAPTURE_REACTION)
+
+        except discord.NotFound:
+            # Il messaggio è stato eliminato prima che il bot reagisse.
+            return
+
+        except discord.Forbidden:
+            LOGGER.warning(
+                "Unable to react to failed capture: missing permissions",
+                extra={
+                    "guild_id": message.guild.id if message.guild else None,
+                    "channel_id": message.channel.id,
+                    "message_id": message.id,
+                },
+            )
+
+        except discord.HTTPException:
+            LOGGER.exception(
+                "Discord error while reacting to failed capture",
+                extra={
+                    "guild_id": message.guild.id if message.guild else None,
+                    "channel_id": message.channel.id,
+                    "message_id": message.id,
+                },
+            )
 
     async def destroy_guild_data(self, guild_id: int) -> None:
         """Irreversibly delete one guild's game data and stop its task."""

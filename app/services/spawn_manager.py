@@ -24,6 +24,7 @@ REQUIRED_CHANNEL_PERMISSIONS: tuple[tuple[str, str], ...] = (
     ("embed_links", "Embed Links"),
     ("attach_files", "Attach Files"),
     ("read_message_history", "Read Message History"),
+    ("add_reactions", "Add Reactions"),
 )
 
 class ForceSpawnResult(StrEnum):
