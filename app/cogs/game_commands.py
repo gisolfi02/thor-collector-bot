@@ -347,7 +347,7 @@ class GameCommands(commands.Cog):
             )
             return
 
-        collectible = self.bot.collectible_service.choose()
+        collectible = self.bot.collectibles.choose()
         if collectible is None:
             await interaction.response.send_message(
                 "Non ci sono foto disponibili da mostrare al momento.",
@@ -355,7 +355,7 @@ class GameCommands(commands.Cog):
             )
             return
 
-        image_path = self.bot.collectible_service.image_path(collectible)
+        image_path = self.bot.collectibles.image_path(collectible)
         if not image_path.is_file():
             await interaction.response.send_message(
                 "L'immagine associata a questa foto non è disponibile.",

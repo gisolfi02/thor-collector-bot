@@ -117,6 +117,19 @@ class ThorCollectorBot(commands.Bot):
         await self.collectibles.synchronize()
         await self.add_cog(GameCommands(self))
         await self.add_cog(CollectionCommands(self))
+        # Pulizia una tantum dei vecchi comandi della test guild.
+        cleanup_guild = discord.Object(id=1339261073093689534)
+
+        self.tree.clear_commands(guild=cleanup_guild)
+        removed_commands = await self.tree.sync(guild=cleanup_guild)
+
+        LOGGER.info(
+            "Old test-guild commands removed",
+            extra={
+                "guild_id": cleanup_guild.id,
+                "remaining_guild_commands": len(removed_commands),
+            },
+        )
 
         if self.settings.test_guild_id is not None:
             guild_object = discord.Object(id=self.settings.test_guild_id)
